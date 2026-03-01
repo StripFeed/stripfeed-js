@@ -1,6 +1,6 @@
 # StripFeed SDK for TypeScript
 
-Official TypeScript/JavaScript SDK for [StripFeed](https://www.stripfeed.dev) - convert any URL to clean, token-efficient Markdown for AI agents.
+Official TypeScript/JavaScript SDK for [StripFeed](https://www.stripfeed.dev) - convert any URL to clean, token-efficient Markdown for AI agents, RAG pipelines, and LLM workflows.
 
 ## Install
 
@@ -107,6 +107,8 @@ Parse StripFeed response headers into a typed object.
 
 - [API Docs](https://www.stripfeed.dev/docs)
 - [Dashboard](https://www.stripfeed.dev/dashboard)
+- [Python SDK](https://pypi.org/project/stripfeed/)
+- [MCP Server](https://www.npmjs.com/package/@stripfeed/mcp-server)
 - [GitHub](https://github.com/StripFeed/stripfeed-js)
 
 ## License

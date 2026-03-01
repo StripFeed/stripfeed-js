@@ -1,6 +1,6 @@
 {
   "name": "stripfeed",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Official TypeScript SDK for StripFeed - convert any URL to clean Markdown",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,12 +15,16 @@
   "keywords": [
     "stripfeed",
     "markdown",
+    "url-to-markdown",
+    "html-to-markdown",
     "web-scraping",
+    "content-extraction",
     "ai",
     "llm",
     "rag",
+    "ai-agents",
+    "token-counting",
     "readability",
-    "html-to-markdown",
     "api",
     "sdk"
   ],
