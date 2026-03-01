@@ -1,0 +1,44 @@
+{
+  "name": "stripfeed",
+  "version": "1.0.1",
+  "description": "Official TypeScript SDK for StripFeed - convert any URL to clean Markdown",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "stripfeed",
+    "markdown",
+    "web-scraping",
+    "ai",
+    "llm",
+    "rag",
+    "readability",
+    "html-to-markdown",
+    "api",
+    "sdk"
+  ],
+  "author": "StripFeed",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StripFeed/stripfeed-js.git"
+  },
+  "homepage": "https://www.stripfeed.dev",
+  "bugs": {
+    "url": "https://github.com/StripFeed/stripfeed-js/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^4.0.0"
+  }
+}
