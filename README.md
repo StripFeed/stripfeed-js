@@ -61,6 +61,49 @@ for (const item of result.results) {
 }
 ```
 
+### Robust selector strategy for changing websites
+
+When a website's content structure changes frequently, use a fallback chain of selectors to extract content without manual intervention:
+
+```typescript
+import { StripFeed, StripFeedError } from "stripfeed";
+
+const sf = new StripFeed("sf_live_your_api_key");
+
+// Define a list of selectors from most specific to least specific.
+// If the site redesigns, the first selector may break but broader ones still work.
+const selectors = ["article.post-content", "article", "main", ".content", "#main"];
+
+async function fetchWithFallback(url: string): Promise<string> {
+  for (const selector of selectors) {
+    try {
+      const result = await sf.fetch(url, { selector });
+      // If content is too short, the selector probably matched a wrong element
+      if (result.markdown.length > 100) {
+        return result.markdown;
+      }
+    } catch (err) {
+      // 422 means selector matched nothing on the page, try the next one
+      if (err instanceof StripFeedError && err.status === 422) {
+        continue;
+      }
+      throw err; // Re-throw non-selector errors (401, 429, 502, etc.)
+    }
+  }
+  // If no selector worked, fetch without selector (gets full page content)
+  const result = await sf.fetch(url);
+  return result.markdown;
+}
+```
+
+**Tips for resilient extraction:**
+- Order selectors from most specific (`article.post-body`) to broadest (`main`)
+- Use semantic HTML tags (`article`, `main`) over class names, as they survive redesigns
+- Check `result.markdown.length` or `result.tokens` to detect selector mismatches
+- Fall back to a no-selector fetch as a last resort (StripFeed's Readability engine auto-extracts the main content)
+- Use `cache: false` for monitoring scenarios where freshness matters
+- Combine with `maxTokens` to cap output size regardless of what the selector captures
+
 ### Error handling
 
 ```typescript
