@@ -22,9 +22,9 @@ npm run test:watch  # Watch mode tests
 ## Architecture
 
 Single file (`src/index.ts`). Exports:
-- `StripFeed` class (default export) with `fetch()`, `fetchMarkdown()`, `batch()`
+- `StripFeed` class (default export) with `fetch()`, `fetchMarkdown()`, `batch()`, `usage()`
 - `StripFeedError` for API errors
-- Types: `FetchOptions`, `FetchResult`, `BatchItem`, `BatchResult`, `ResponseMeta`
+- Types: `FetchOptions`, `FetchResult`, `BatchItem`, `BatchResult`, `ResponseMeta`, `UsageResult`
 
 Uses native `globalThis.fetch` (Node 18+). No external dependencies.
 

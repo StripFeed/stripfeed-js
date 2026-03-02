@@ -15,6 +15,8 @@ export interface FetchOptions {
   cache?: boolean;
   /** Custom cache TTL in seconds (default: 3600, max: 86400) */
   ttl?: number;
+  /** Truncate output to fit within this token budget */
+  maxTokens?: number;
 }
 
 export interface FetchResult {
@@ -38,6 +40,8 @@ export interface FetchResult {
   model: string | null;
   /** The URL that was fetched */
   url: string;
+  /** Whether content was truncated by max_tokens */
+  truncated: boolean;
   /** Clean HTML (only when format is "json") */
   html?: string;
   /** Plain text (only when format is "json") */
@@ -94,12 +98,26 @@ export interface ResponseMeta {
   fetchMs: number;
   format: string;
   model: string | null;
+  truncated: boolean;
   selector: string | null;
   rateLimit: {
     limit: number;
     remaining: number;
     reset: number;
   };
+}
+
+export interface UsageResult {
+  /** Current plan (free, pro, enterprise) */
+  plan: string;
+  /** Number of requests used this month */
+  usage: number;
+  /** Monthly request limit (null for unlimited) */
+  limit: number | null;
+  /** Remaining requests this month (null for unlimited) */
+  remaining: number | null;
+  /** ISO timestamp when usage resets */
+  resetsAt: string;
 }
 
 // --- Error ---
@@ -154,6 +172,7 @@ export class StripFeed {
     if (options?.model) params.set("model", options.model);
     if (options?.cache === false) params.set("cache", "false");
     if (options?.ttl !== undefined) params.set("ttl", String(options.ttl));
+    if (options?.maxTokens !== undefined) params.set("max_tokens", String(options.maxTokens));
 
     // Always request JSON format for the SDK to get structured data
     const requestFormat = options?.format ?? "json";
@@ -230,6 +249,30 @@ export class StripFeed {
   }
 
   /**
+   * Check current monthly API usage and plan limits.
+   *
+   * @example
+   * ```ts
+   * const sf = new StripFeed("sf_live_...");
+   * const usage = await sf.usage();
+   * console.log(`${usage.usage} / ${usage.limit} requests used`);
+   * ```
+   */
+  async usage(): Promise<UsageResult> {
+    const response = await this.request(`${this.baseUrl}/usage`);
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new StripFeedError(
+        response.status,
+        (body as { error?: string }).error ?? `HTTP ${response.status}`,
+      );
+    }
+
+    return (await response.json()) as UsageResult;
+  }
+
+  /**
    * Parse response headers into a structured metadata object.
    * Useful when you need rate limit info or cache status.
    */
@@ -242,6 +285,7 @@ export class StripFeed {
       fetchMs: Number(headers.get("x-stripfeed-fetch-ms") ?? 0),
       format: headers.get("x-stripfeed-format") ?? "markdown",
       model: headers.get("x-stripfeed-model"),
+      truncated: headers.get("x-stripfeed-truncated") === "true",
       selector: headers.get("x-stripfeed-selector"),
       rateLimit: {
         limit: Number(headers.get("x-ratelimit-limit") ?? 0),

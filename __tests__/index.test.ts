@@ -92,6 +92,19 @@ describe("StripFeed.fetch", () => {
     expect(calledUrl).toContain("ttl=7200");
   });
 
+  it("passes max_tokens parameter", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ markdown: "", truncated: true }),
+    });
+
+    const sf = new StripFeed("sf_live_test123");
+    await sf.fetch("https://example.com", { maxTokens: 5000 });
+
+    const calledUrl = mockFetch.mock.calls[0][0] as string;
+    expect(calledUrl).toContain("max_tokens=5000");
+  });
+
   it("throws StripFeedError on 401", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
@@ -276,6 +289,43 @@ describe("StripFeed.batch", () => {
   });
 });
 
+describe("StripFeed.usage", () => {
+  it("calls the usage endpoint", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({
+        plan: "pro",
+        usage: 1250,
+        limit: 100000,
+        remaining: 98750,
+        resetsAt: "2026-04-01T00:00:00.000Z",
+      }),
+    });
+
+    const sf = new StripFeed("sf_live_test123");
+    const result = await sf.usage();
+
+    expect(result.plan).toBe("pro");
+    expect(result.usage).toBe(1250);
+    expect(result.limit).toBe(100000);
+    expect(result.remaining).toBe(98750);
+
+    const calledUrl = mockFetch.mock.calls[0][0] as string;
+    expect(calledUrl).toContain("/usage");
+  });
+
+  it("throws StripFeedError on 401", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      json: () => Promise.resolve({ error: "Invalid API key" }),
+    });
+
+    const sf = new StripFeed("sf_live_bad");
+    await expect(sf.usage()).rejects.toMatchObject({ status: 401 });
+  });
+});
+
 describe("StripFeed.parseHeaders", () => {
   it("parses response headers correctly", () => {
     const headers = new Headers({
@@ -286,6 +336,7 @@ describe("StripFeed.parseHeaders", () => {
       "x-stripfeed-fetch-ms": "0",
       "x-stripfeed-format": "markdown",
       "x-stripfeed-model": "claude-sonnet-4-6",
+      "x-stripfeed-truncated": "true",
       "x-ratelimit-limit": "20",
       "x-ratelimit-remaining": "18",
       "x-ratelimit-reset": "1700000000",
@@ -301,6 +352,7 @@ describe("StripFeed.parseHeaders", () => {
     expect(meta.format).toBe("markdown");
     expect(meta.model).toBe("claude-sonnet-4-6");
     expect(meta.rateLimit.limit).toBe(20);
+    expect(meta.truncated).toBe(true);
     expect(meta.rateLimit.remaining).toBe(18);
   });
 

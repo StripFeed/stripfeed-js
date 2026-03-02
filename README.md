@@ -1,5 +1,8 @@
 # StripFeed SDK for TypeScript
 
+[![npm version](https://img.shields.io/npm/v/stripfeed)](https://www.npmjs.com/package/stripfeed)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Official TypeScript/JavaScript SDK for [StripFeed](https://www.stripfeed.dev) - convert any URL to clean, token-efficient Markdown for AI agents, RAG pipelines, and LLM workflows.
 
 ## Install
@@ -32,6 +35,7 @@ const result = await sf.fetch("https://example.com", {
   model: "claude-sonnet-4-6",    // cost tracking
   cache: false,                  // bypass cache
   ttl: 7200,                     // custom cache TTL in seconds
+  maxTokens: 5000,               // truncate to token budget
 });
 ```
 
@@ -98,6 +102,10 @@ Shorthand that returns only the markdown string.
 ### `sf.batch(urls, options?): Promise<BatchResult>`
 
 Fetch up to 10 URLs in parallel. Pro plan required.
+
+### `sf.usage(): Promise<UsageResult>`
+
+Check current monthly API usage and plan limits.
 
 ### `StripFeed.parseHeaders(headers): ResponseMeta`
 
