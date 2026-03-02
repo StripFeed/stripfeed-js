@@ -26,7 +26,13 @@
     "token-counting",
     "readability",
     "api",
-    "sdk"
+    "sdk",
+    "anthropic",
+    "openai",
+    "chatgpt",
+    "mcp",
+    "text-extraction",
+    "web-to-markdown"
   ],
   "author": "StripFeed",
   "license": "MIT",

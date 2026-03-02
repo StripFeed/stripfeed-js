@@ -1,0 +1,18 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "StripFeed TypeScript SDK",
+  "description": "Official TypeScript/JavaScript SDK for StripFeed. Convert any URL to clean, token-efficient Markdown for AI agents, RAG pipelines, and LLM workflows.",
+  "excludeFolders": ["node_modules", "dist", "__tests__"],
+  "excludeFiles": ["CHANGELOG.md"],
+  "rules": [
+    "Install via: npm install stripfeed",
+    "Requires Node.js 18+ (uses native fetch)",
+    "Create client: const sf = new StripFeed('sf_live_your_api_key')",
+    "sf.fetch(url, options?) returns full result with markdown, tokens, metadata",
+    "sf.fetchMarkdown(url, options?) returns only the Markdown string",
+    "sf.batch(urls, options?) fetches up to 10 URLs in parallel (Pro plan)",
+    "sf.usage() checks current monthly API usage and plan limits",
+    "Options: selector, format, model, cache, ttl, maxTokens",
+    "Errors are thrown as StripFeedError with status and message properties"
+  ]
+}
